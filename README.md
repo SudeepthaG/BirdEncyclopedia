@@ -1,6 +1,6 @@
 # Bird Encyclopedia - A Full Stack Web Application built using Golang
 
-##Aim:
+## Aim:
 To build a community encyclopedia of birds.
 This website will :
 - Display the different entries submitted by the community, with the name and details of the bird they found.
