@@ -21,3 +21,12 @@ touch main.go
 Write main function
 go run main.go
 curl localhost:8080 or go to http://localhost:8080
+try 8080/(random string) - will give same result
+
+Part2:
+Make changes using gorilla/mux
+go run main.go
+curl localhost:8080 or go to http://localhost:8080 - will give 404.
+Try 8080/hello - works..everything else gives 404
+
+Write test file to test the functions
