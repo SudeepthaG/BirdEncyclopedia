@@ -1,47 +1,60 @@
 package main
 
 import (
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 )
 
 func TestHandler(t *testing.T) {
-	//Here, we form a new HTTP request. This is the request that's going to be
-	// passed to our handler.
-	// The first argument is the method, the second argument is the route (which
-	//we leave blank for now, and will get back to soon), and the third is the
-	//request body, which we don't have in this case.
-	req, err := http.NewRequest("GET", "", nil)
 
-	// In case there is an error in forming the request, we fail and stop the test
+	r := newRouter()                    //// Instantiate the router
+	mockServer := httptest.NewServer(r) //The mock server we created runs a server and exposes its location in the URL attribute
+
+	//Test 1: for get method and actual url
+	resp, err := http.Get(mockServer.URL + "/hello")
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	// We use Go's httptest library to create an http recorder. This recorder
-	// will act as the target of our http request
-	// (you can think of it as a mini-browser, which will accept the result of
-	// the http request that we make)
-	recorder := httptest.NewRecorder()
-	// Create an HTTP handler from our handler function. "handler" is the handler
-	// function defined in our main.go file that we want to test
-	hf := http.HandlerFunc(handler)
-
-	// Serve the HTTP request to our recorder. This is the line that actually
-	// executes our the handler that we want to test
-	hf.ServeHTTP(recorder, req)
-	//checking if status code ok
-	if status := recorder.Code; status != http.StatusOK {
-		t.Errorf("handler returned wrong statis code: got %v want %v", status, http.StatusOK)
+	if resp.StatusCode != http.StatusOK { //we need 200
+		t.Errorf("status should be ok, we got %d", resp.StatusCode)
 	}
 
-	//checking if response body ok
+	//To read response body and convert to a string
+	defer resp.Body.Close()
+	bytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		t.Error(err)
+	}
+	respString := string(bytes)
 	expected := "Hello World! Welcome to Sudeeptha's Bird Encyclopedia"
-	// expected := "Hello World! Welcome to Sudeeptha's Bird Encyclodddddddpedia"			//try testing with this as well- ythe trst will fail as the strings are not equal
-	actual := recorder.Body.String()
-	if actual != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v", actual, expected)
+	if respString != expected {
+		t.Errorf("rrsponse should be %s we got %s", expected, respString)
+	}
+
+	//Test 2: for post method
+	resp, err = http.Post(mockServer.URL+"/hello", "", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// We want our status to be 405 (method not allowed)
+	if resp.StatusCode != http.StatusMethodNotAllowed {
+		t.Errorf("Status should be 405, got %d", resp.StatusCode)
+	}
+
+	// The code to test the body is also mostly the same, except this time, we expect an empty body
+	defer resp.Body.Close()
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		t.Fatal(err)
+	}
+	respString = string(b)
+	expected = ""
+
+	if respString != expected {
+		t.Errorf("Response should be %s, got %s", expected, respString)
 	}
 
 }

@@ -31,10 +31,14 @@ import (
 
 //Implementation part2 - in this case the router will work only for 8080/hello..everything else will return 404
 
-func main() {
+func newRouter() *mux.Router {
 	r := mux.NewRouter()                           //creating new router
 	r.HandleFunc("/hello", handler).Methods("GET") //router helps us specify which method the path will be va;id for
-	http.ListenAndServe(":8080", r)                //passing our router after declaring our routes
+	return r
+}
+func main() {
+	r := newRouter()                //creating new router
+	http.ListenAndServe(":8080", r) //passing our router after declaring our routes
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {

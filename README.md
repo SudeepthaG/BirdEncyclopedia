@@ -30,4 +30,9 @@ curl localhost:8080 or go to http://localhost:8080 - will give 404.
 Try 8080/hello - works..everything else gives 404
 
 Write test file to test the functions
-To run this test, just run : go test ./...
+To run this test, just run :
+go test ./...
+Initially,the test ws working for any URL.
+
+By using our router, we are testing for our specific URL: 8080/hello
+go test ./...
