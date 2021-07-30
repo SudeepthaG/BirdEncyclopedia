@@ -37,3 +37,12 @@ Initially,the test ws working for any URL.
 By using our router, we are testing for our specific URL: 8080/hello
 I wrote tests for both GET and POST methods. To perform the tests use:
 go test ./...
+
+Part 3: adding static files
+mkdir assets
+touch assets/index.html
+Modify router to read static files
+Add tests for the static file server
+To test your server use: go test ./...
+If you want your succes messages to be printed as welll, use the -v verbose flag:
+go test -v ./...

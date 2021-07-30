@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -32,6 +33,8 @@ func TestHandler(t *testing.T) {
 	expected := "Hello World! Welcome to Sudeeptha's Bird Encyclopedia"
 	if respString != expected {
 		t.Errorf("rrsponse should be %s we got %s", expected, respString)
+	} else {
+		t.Log("test 1 successful\n")
 	}
 
 	//Test 2: for post method
@@ -44,7 +47,6 @@ func TestHandler(t *testing.T) {
 		t.Errorf("Status should be 405, got %d", resp.StatusCode)
 	}
 
-	// The code to test the body is also mostly the same, except this time, we expect an empty body
 	defer resp.Body.Close()
 	b, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
@@ -55,6 +57,27 @@ func TestHandler(t *testing.T) {
 
 	if respString != expected {
 		t.Errorf("Response should be %s, got %s", expected, respString)
+	} else {
+		fmt.Printf("test 2 successful\n")
+	}
+
+	//Test 3: testing the static file server
+	resp, err = http.Get(mockServer.URL + "/assets/")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if resp.StatusCode != http.StatusOK {
+		t.Errorf("Status shoould be 220, we got %d", resp.StatusCode)
+	}
+
+	// It isn't wise to test the entire content of the HTML file.
+	// Instead, we test that the content-type header is "text/html; charset=utf-8" so that we know that an html file has been served
+	actualContentType := resp.Header.Get("Content-Type")
+	expectedContentTypee := "text/html; charset=utf-8"
+	if expectedContentTypee != actualContentType {
+		t.Errorf("wrong content type,expected %s got %s", expectedContentTypee, actualContentType)
+	} else {
+		fmt.Printf("test 3 successful\n")
 	}
 
 }
