@@ -11,10 +11,14 @@ import (
 )
 
 func TestGetBirdsHandler(t *testing.T) {
+	mockStore := InitMockStore()
+	/* Define the data that we want to return when the mocks `GetBirds` method is called. We expect it to be called only once */
 
-	birds = []Bird{
-		{"sparrow", "A small harmless bird"},
-	}
+	// birds = []Bird{
+	// 	{"sparrow", "A small harmless bird"},
+	// }
+
+	mockStore.On("GetBirds").Return([]*Bird{{"sparrow", " a small harmless bird"}}, nil).Once()
 
 	req, err := http.NewRequest("GET", "", nil)
 
@@ -32,7 +36,7 @@ func TestGetBirdsHandler(t *testing.T) {
 			status, http.StatusOK)
 	}
 
-	expected := Bird{"sparrow", "A small harmless bird"}
+	expected := Bird{"sparrow", " a small harmless bird"}
 	b := []Bird{}
 	err = json.NewDecoder(recorder.Body).Decode(&b)
 
@@ -45,12 +49,19 @@ func TestGetBirdsHandler(t *testing.T) {
 	if actual != expected {
 		t.Errorf("handler returned unexpected body: got %v want %v", actual, expected)
 	}
+	mockStore.AssertExpectations(t)
 }
 func TestCreateBirdsHandler(t *testing.T) {
-
-	birds = []Bird{
-		{"sparrow", "A small harmless bird"},
-	}
+	mockStore := InitMockStore()
+	/*
+	 Similarly, we define our expectations for th `CreateBird` method.
+	 We expect the first argument to the method to be the bird struct
+	 defined below, and tell the mock to return a `nil` error
+	*/
+	mockStore.On("CreateBird", &Bird{"eagle", "A bird of prey"}).Return(nil)
+	// birds = []Bird{
+	// 	{"sparrow", "A small harmless bird"},
+	// }
 
 	form := newCreateBirdForm()
 	req, err := http.NewRequest("POST", "", bytes.NewBufferString(form.Encode()))
@@ -71,17 +82,19 @@ func TestCreateBirdsHandler(t *testing.T) {
 			status, http.StatusOK)
 	}
 
-	expected := Bird{"eagle", "A bird of prey"}
+	mockStore.AssertExpectations(t)
 
-	if err != nil {
-		t.Fatal(err)
-	}
+	// expected := Bird{"eagle", "A bird of prey"}
 
-	actual := birds[1]
+	// if err != nil {
+	// 	t.Fatal(err)
+	// }
 
-	if actual != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v", actual, expected)
-	}
+	// actual := birds[1]
+
+	// if actual != expected {
+	// 	t.Errorf("handler returned unexpected body: got %v want %v", actual, expected)
+	// }
 }
 
 func newCreateBirdForm() *url.Values {

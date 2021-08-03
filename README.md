@@ -8,13 +8,14 @@ This website will :
 - Display the different entries submitted by the community, with the name and details of the bird they found.
 - Allow anyone to post a new entry about a bird that they saw.
 
-Components:
+## Components:
 
 - Web Server
 - Front-end(Client side) app
 - Database
 
-Implementation steps:
+## Implementation steps:
+### Part1: Creating a basic server
 
 - mkdir birdpedia
 - go mod init ./birdpedia
@@ -24,7 +25,7 @@ Implementation steps:
 - curl localhost:8080 or go to http://localhost:8080
 - try 8080/(random string) - will give same result
 
-Part2:
+### Part2:
 
 - Make changes using gorilla/mux
 - go run main.go
@@ -43,7 +44,7 @@ I wrote tests for both GET and POST methods.
 - To perform the tests use:
   go test ./...
 
-Part 3: Adding static files
+### Part 3: Adding static files
 
 - mkdir assets
 - touch assets/index.html
@@ -53,7 +54,7 @@ Part 3: Adding static files
 - If you want your succes messages to be printed as welll, use the -v verbose flag:
   go test -v ./...
 
-Part 4: Adding REST APIs
+### Part 4: Adding REST APIs
 
 - Create tables and forms in the html file.
   The form uses POST to that will add an entry to our existing list of birds
@@ -64,4 +65,30 @@ Part 4: Adding REST APIs
 - If your handlers are in the main function as well, it is sufficient if you only run main.go. As I added the bird_handlers in a different file for code modularity, we need to run both the files.
 - At this point our application will be able to reflect the latest addition to the birds table but it won't be able to store the data.
 
-Add test files for testing the current existing functionality and run the tests.
+Add test files for testing the current existing functionality and run the tests using go run main.go bird_handlers.go
+
+### Part 5: Adding PostgreSQL database
+
+- Open postgres terminal
+- Create database using command: CREATE DATABASE bird_encyclopedia;
+- Use command: \l to check if the database is created successfully
+- Connect to it using command: \c bird_encyclopedia
+- CREATE TABLE birds (
+  id SERIAL PRIMARY KEY,
+  bird VARCHAR(256),
+  description VARCHAR(1024)
+  );
+
+- Import package for running postgres commands using  go get "github.com/lib/pq"..Add this package to imports in files making postgres connection.
+- Create the store.go file in our current directory to interact with the database
+- Update our bird handlers to send and receive data to our database
+- Use go get "github.com/stretchr/testify/suite" to use in creating the test suite
+- Add test files for testing the database store
+Make sure that the database names and table names match correctly.
+- Perform tests to check if everything works correctly.
+- Now run the program using:
+ go run main.go bird_handlers.go store.go   
+- Add any new birds and they qould be visible in table even after reloading.
+
+
+

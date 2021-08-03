@@ -11,11 +11,13 @@ type Bird struct {
 	Description string `json:"description"`
 }
 
-var birds []Bird
+// var birds []Bird
 
 func getBirdHandler(w http.ResponseWriter, r *http.Request) {
-	birdListBytes, err := json.Marshal(birds) //convert birds variable to json     t
-	if err != nil {
+	birds, err1 := store.GetBirds()
+
+	birdListBytes, err := json.Marshal(birds) //convert birds variable to json
+	if err1 != nil {
 		fmt.Println(fmt.Errorf("error: %v", err))
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -35,7 +37,11 @@ func createBirdHandler(w http.ResponseWriter, r *http.Request) {
 
 	bird.Species = r.Form.Get("species")
 	bird.Description = r.Form.Get("description")
-	birds = append(birds, bird)
+	// birds = append(birds, bird)
+	err = store.CreateBird(&bird)
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	// redirect the user to the original HTMl page located at `/assets/`), using the http libraries `Redirect` method
 	http.Redirect(w, r, "/assets/", http.StatusFound)
