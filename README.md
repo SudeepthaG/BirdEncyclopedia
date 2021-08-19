@@ -75,7 +75,7 @@ Add test files for testing the current existing functionality and run the tests 
 - Connect to it using command: \c bird_encyclopedia
 - CREATE TABLE birds (
   id SERIAL PRIMARY KEY,
-  bird VARCHAR(256),
+  species VARCHAR(256),
   description VARCHAR(1024)
   );
 
@@ -88,7 +88,19 @@ Make sure that the database names and table names match correctly.
 - Perform tests to check if everything works correctly.
 - Now run the program using:
  go run main.go bird_handlers.go store.go   
-- Add any new birds and they qould be visible in table even after reloading.
+- Add any new birds and they should be visible in table even after reloading.
+
+
+### Part 6: Making the Postgres database on a docker container
+- Open docker
+- Run command: docker run --name postgres-container -e POSTGRES_PASSWORD=docker -p 5432:5432 -d postgres
+- Create Dockerfile anddatabase.sql file. 
+- Save the above two files in a directory within the user directory
+- cd to the new directory and run docker build -t my-postgres-img ./
+- Check if the image is properly created by using the command: docker images -a
+- Now run the image using the command:docker run -d --name my-postgresdb-container -p 5432:5432 my-postgres-db
+- This image contains our database-bird_encyclopedia which contains our birds table because of the sql file dump.
+
 
 
 
